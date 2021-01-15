@@ -1,0 +1,4 @@
+python-dotenv
+requests
+werkzeug==0.16.1 
+robobrowser
