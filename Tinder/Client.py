@@ -1,4 +1,5 @@
-import requests, os, sys
+import requests, os, sys, time
+from random import randint
 
 from Tinder.tinder_auth import login_tinder
 from Tinder.fb_auth import login_fb
@@ -7,6 +8,7 @@ from Tinder.globals import get_headers, URL
 from Tinder.Exceptions import TinderGetMatchesError, TinderGetRecsError, TinderLikeError, TinderPassError
 
 PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sio = None
 
 class TinderClient:
 
@@ -26,6 +28,10 @@ class TinderClient:
         f = open(PATH + "/.tokens","w+")
 
         f.write("FB_TOKEN={}\r\nFB_ID={}\r\nTINDER_TOKEN={} \r\n".format(fb_token, fb_id, tinder_token))
+
+    def setWS(self,socket):
+        global sio
+        sio = socket
 
     def set_tinder_token(self,tinder_token):
         self.headers.update({"X-Auth-Token": tinder_token})
@@ -94,3 +100,21 @@ class TinderClient:
         if(json["status"] != 200):
             raise TinderPassError("No se pudo dar Pass", req)
 
+    def startAutoLike(self):
+        print("Empezando a dar likes automaticos")
+        sio.emit("info","TinderBot: Empezando a dar likes automáticos")
+        while True:
+            recs = self.get_recs()
+            print("Encontrados {} recomendados".format(len(recs)))
+            sio.emit("info","TinderBot: Encontrados {} recomendados".format(len(recs)))
+            for rec in recs:
+                try:
+                    self.likeRec(rec["_id"])
+                except TinderLikeError as e:
+                    print(e.error.headers, e.error.json())
+                time.sleep(randint(1,5))
+
+            nxtTime = randint(2400,5400)
+            print("Proxima iteración de likes en {} minutos".format(round(nxtTime/60,0)))
+            sio.emit("info","TinderBot: Proxima iteración de likes en {} minutos".format(round(nxtTime/60,0)))
+            time.sleep(nxtTime)

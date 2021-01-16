@@ -1,7 +1,6 @@
-import sys, os, time
+import sys, os
 from dotenv import load_dotenv
 from pathlib import Path
-from random import randint
 
 import WS
 from Tinder.Exceptions import TinderAuthError, FBAuthError
@@ -38,25 +37,7 @@ def startTinderClient():
 def startWS(client):
     WS.connect(IP_WS,PORT_WS)
     WS.setTinderClient(client)
-
-def startAutoLike():
-    global client
-
-    print("Empezando a dar likes automaticos")
-    while True:
-        recs = client.get_recs()
-        print("Encontrados {} recomendados".format(len(recs)))
-        for rec in recs:
-            try:
-                client.likeRec(rec["_id"])
-            except TinderLikeError as e:
-                print(e.error.headers, e.error.json())
-            time.sleep(randint(1,5))
-
-        nxtTime = randint(2400,5400)
-        print("Proxima iteración de likes en {} minutos".format(nxtTime/60))
-        time.sleep(nxtTime)
-
+    
 startTinderClient()
 startWS(client)
-startAutoLike()
+client.startAutoLike()

@@ -8,6 +8,7 @@ TinderClient = None
 def setTinderClient(client):
     global TinderClient
     TinderClient = client
+    client.setWS(sio)
 
 def connect(IP,PORT):
     sio.connect("http://localhost:5000")
@@ -28,11 +29,11 @@ def message(data):
     try:
         likes = TinderClient.get_likes()
         matchs = TinderClient.get_matchs()
-        msg = "@{}, el bot dio {} likes y tiene {} matchs".format(username, likes,matchs)
+        msg = "TinderBot: @{}, di {} likes y tengo {} matchs".format(username, likes,matchs)
 
     except Exception as e:
         print(e)
-        msg = "Hubo un error al extraer los datos de Tinder"
+        msg = "TinderBot: Hubo un error al extraer los datos de Tinder"
 
     finally:
         sio.emit('response', msg)
