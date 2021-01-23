@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, time
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -40,4 +40,5 @@ def startWS(client):
     
 startTinderClient()
 startWS(client)
+time.sleep(1)
 client.startAutoLike()

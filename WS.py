@@ -1,5 +1,5 @@
 import socketio
-
+import os
 import Tinder
 
 sio = socketio.Client()
@@ -8,19 +8,14 @@ TinderClient = None
 def setTinderClient(client):
     global TinderClient
     TinderClient = client
-    client.setWS(sio)
 
-def connect(IP,PORT):
-    sio.connect("http://localhost:5000")
-    print('Sucessfully connected to WS Server')
+def connect(ip,port):
+    sio.connect("http://{}:{}/".format(ip,port))
+    print('Conectado correctamente a ChatTwitch Server')
 
 @sio.on("handshake")
 def handshake(data):
     sio.emit("handshake","tinder")
-
-@sio.event
-def disconnect():
-    print("I'm disconnected!")
 
 @sio.on('message')
 def message(data):

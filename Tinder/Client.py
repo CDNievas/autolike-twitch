@@ -7,8 +7,9 @@ from Tinder.globals import get_headers, URL
 
 from Tinder.Exceptions import TinderGetMatchesError, TinderGetRecsError, TinderLikeError, TinderPassError
 
+from WS import sio
+
 PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sio = None
 
 class TinderClient:
 
@@ -28,10 +29,6 @@ class TinderClient:
         f = open(PATH + "/.tokens","w+")
 
         f.write("FB_TOKEN={}\r\nFB_ID={}\r\nTINDER_TOKEN={} \r\n".format(fb_token, fb_id, tinder_token))
-
-    def setWS(self,socket):
-        global sio
-        sio = socket
 
     def set_tinder_token(self,tinder_token):
         self.headers.update({"X-Auth-Token": tinder_token})
